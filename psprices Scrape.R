@@ -8,7 +8,7 @@ library(RSelenium)
 library(stringr)
 
 #open connection to RSelenium
-rD <-rsDriver(browser="chrome", port=1234L, chromever = "107.0.5304.62")
+rD <-rsDriver(browser="chrome", port=1236L, chromever = "107.0.5304.62")
 remDr <- rD[["client"]]
 
 #create empty data frame
@@ -25,7 +25,7 @@ ebayPrice = 0
 #get the prices for each game in psprices
 getPrice = function(priceLink) {
   gamePage = read_html(priceLink)
-  gamePrice = gamePage %>% html_nodes("strong:nth-child(1)") %>%
+  gamePrice = gamePage %>% html_nodes(".text-secondary strong:nth-child(1)") %>%
     html_text() %>% paste(collapse = ",")
   if(gamePrice == ""){
     gamePrice = "0.00"
@@ -40,6 +40,15 @@ getReleaseDate = function(priceLink){
   gamePage = read_html(priceLink)
   releaseDate = gamePage %>% html_nodes("strong~ strong+ strong") %>%
     html_text() %>% paste(collapse = ",")
+  releaseDate = str_sub(releaseDate,-4,-1)
+  return(releaseDate)
+}
+
+getSwitchReleaseDate = function(priceLink){
+  gamePage = read_html(priceLink)
+  releaseDate = gamePage %>% html_nodes("strong+ strong") %>%
+    html_text() %>% paste(collapse = ",")
+  releaseDate = str_sub(releaseDate,-4,-1)
   return(releaseDate)
 }
 
@@ -137,7 +146,7 @@ for(SwitchpageResult in seq(from = 1, to = 1, by = 1)){
     html_attr("href") %>% paste("https://www.psprices.com", ., sep="")
   
   #release date
-  releaseDate = sapply(gameLinks, FUN = getReleaseDate)
+  releaseDate = sapply(gameLinks, FUN = getSwitchReleaseDate)
   lowestPrice = sapply(gameLinks, FUN = getPrice)
   
   gameType = "Nintendo"
@@ -147,9 +156,10 @@ for(SwitchpageResult in seq(from = 1, to = 1, by = 1)){
   
   #write to data
   games <- rbind(games, data.frame(gameType, productName, releaseDate, lowestPrice, ebayPrice))
-  write.csv(games, "ConsoleGames.csv")
+  #write.csv(games, "ConsoleGames.csv")
 }
 
+write.csv(games, "ConsoleGames.csv")
 
 #close RSelenium
 remDr$close()
