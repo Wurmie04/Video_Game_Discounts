@@ -9,7 +9,7 @@ library(RSelenium)
 library(stringr)
 
 #open connection to RSelenium
-rD <-rsDriver(browser="chrome", port=1236L, chromever = "107.0.5304.62")
+rD <-rsDriver(browser="chrome", port=1234L, chromever = "107.0.5304.62")
 remDr <- rD[["client"]]
 
 #create empty data frame
@@ -31,6 +31,9 @@ getPrice = function(priceLink) {
   if(gamePrice == ""){
     gamePrice = "0.00"
   }
+  else if(gamePrice == "Free"){
+    gamePrice = "0.00"
+  }
   else{
     gamePrice = gsub("\\$","",gamePrice)
   }
@@ -42,6 +45,9 @@ getReleaseDate = function(priceLink){
   releaseDate = gamePage %>% html_nodes("strong~ strong+ strong") %>%
     html_text() %>% paste(collapse = ",")
   releaseDate = str_sub(releaseDate,-4,-1)
+  if(releaseDate == ""){
+    releaseDate == "0"
+  }
   return(releaseDate)
 }
 
@@ -50,6 +56,9 @@ getSwitchReleaseDate = function(priceLink){
   releaseDate = gamePage %>% html_nodes("strong+ strong") %>%
     html_text() %>% paste(collapse = ",")
   releaseDate = str_sub(releaseDate,-4,-1)
+  if(releaseDate == ""){
+    releaseDate == "0"
+  }
   return(releaseDate)
 }
 
@@ -106,7 +115,7 @@ for(PS5pageResult in seq(from = 1, to = 1, by = 1)){
   ebayPrice = sapply(productName, gameType, FUN=getEbayPrice)
 
   #write to data
-  games <- rbind(games, data.frame(gameType, productName, lowestPrice, releaseDate, ebayPrice))
+  games <- rbind(games, data.frame(gameType, productName, releaseDate, lowestPrice, ebayPrice))
 }
 
 #get game and prices for PS4
@@ -131,7 +140,7 @@ for(PS4pageResult in seq(from = 1, to = 1, by = 1)){
   ebayPrice = sapply(productName, gameType, FUN=getEbayPrice)
   
   #write to data
-  games <- rbind(games, data.frame(gameType, productName, lowestPrice, releaseDate, ebayPrice))
+  games <- rbind(games, data.frame(gameType, productName, releaseDate, lowestPrice, ebayPrice))
 }
 
 #Switch
@@ -165,4 +174,3 @@ write.csv(games, "ConsoleGames.csv")
 #close RSelenium
 remDr$close()
 rD$server$stop()
-
