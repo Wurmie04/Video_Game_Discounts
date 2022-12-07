@@ -1,3 +1,4 @@
+#uncomment install comments if first time and have not installed
 #install.packages("rvest")
 #install.packages("dplyr")
 #install.packages("RSelenium")
