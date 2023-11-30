@@ -28,8 +28,6 @@ public class Reduce extends Reducer<StGroupKey, Text, StGroupKey, Text> {
         int Tcnt = 0;
         float Tavg = 0;
 
-        //Iterable<Text> tempValues = values;
-        //System.out.println(values);
         for(Text f : values){
             String temp = f.toString();
             String[] split = temp.split(",");
@@ -39,29 +37,11 @@ public class Reduce extends Reducer<StGroupKey, Text, StGroupKey, Text> {
             Tsum += tempT;
             Fcnt += 1;
         }
-/*
-        for(Text t : values){
-            String tTemp = t.toString();
-            String[] Tsplit = tTemp.split(",");
-            Float tempT = Float.parseFloat(Tsplit[0]);
-            //Float tempT = Float.parseFloat(split[1]);
-            Tsum += tempT;
-            //Tsum += tempT;
-            Tcnt += 1;
-        }*/
 
         //System.out.println(T)
         Favg = Fsum / (float) Fcnt;
         Tavg = Tsum / (float) Fcnt;
 
-        /*for(Text t : values){
-            String tempT = t.toString();
-            String[] splitT = tempT.split(",");
-            Float newTemp = Float.parseFloat(splitT[1]);
-            System.out.println(newTemp + " " + t);
-            Tsum += newTemp;
-            Tcnt += 1;
-        }
         Tavg = Tsum / (float) Tcnt;*/
 
         String returnText = Favg + " " + Tavg;
